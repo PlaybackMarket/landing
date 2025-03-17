@@ -353,7 +353,7 @@ export default function Home() {
       <section className="analytics-section">
         <div className="analytics-container">
           <div className="analytics-header" ref={analyticsHeaderRef}>
-            <h2>Sonic Trading Protocol</h2>
+            <h2>Playback Protocol</h2>
             <p>Unlock the power of your NFT assets through our advanced lending and borrowing platform. Earn passive income or gain liquidity without selling your collectibles.</p>
           </div>
           
