@@ -1,103 +1,333 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { cubesData } from "./cubesData";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "@studio-freight/lenis";
 import Image from "next/image";
 
 export default function Home() {
+  const [isWalletConnecting, setIsWalletConnecting] = useState(false);
+  const stickyRef = useRef<HTMLElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const cubesContainerRef = useRef<HTMLDivElement>(null);
+  const header1Ref = useRef<HTMLDivElement>(null);
+  const header2Ref = useRef<HTMLDivElement>(null);
+  const connectBtnRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  
+  const handleConnectWallet = () => {
+    setIsWalletConnecting(true);
+    // Simulating connection process
+    setTimeout(() => {
+      setIsWalletConnecting(false);
+      alert("Wallet connection functionality would go here!");
+    }, 1500);
+  };
+  
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const lenis = new Lenis();
+    lenis.on("scroll", ScrollTrigger.update);
+    
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    
+    gsap.ticker.lagSmoothing(0);
+    
+    // Add images to cube faces
+    const cubeFaces = document.querySelectorAll(".cube > div");
+    let imageCounter = 1;
+    
+    cubeFaces.forEach((face) => {
+      const img = document.createElement("img");
+      img.src = `/${imageCounter}.jpg`;
+      img.alt = `Cube face image ${imageCounter}`;
+      face.textContent = "";
+      face.appendChild(img);
+      imageCounter = (imageCounter % 33) + 1; // Loop through 33 images
+    });
+    
+    const interpolate = (start: number, end: number, progress: number) => {
+      return start + (end - start) * progress;
+    };
+    
+    const stickyHeight = window.innerHeight * 4;
+    
+    ScrollTrigger.create({
+      trigger: stickyRef.current,
+      start: "top top",
+      end: `+=${stickyHeight}px`,
+      scrub: 1,
+      pin: true,
+      pinSpacing: true,
+      onUpdate: (self) => {
+        if (!logoRef.current || !cubesContainerRef.current || !header1Ref.current || !header2Ref.current || !connectBtnRef.current) return;
+        
+        const initialProgress = Math.min(self.progress * 20, 1);
+        logoRef.current.style.filter = `blur(${interpolate(0, 20, initialProgress)}px)`;
+        
+        const logoOpacityProgress =
+          self.progress >= 0.02 ? Math.min((self.progress - 0.02) * 100, 1) : 0;
+        logoRef.current.style.opacity = String(1 - logoOpacityProgress);
+        
+        const cubesOpacityProgress =
+          self.progress >= 0.01 ? Math.min((self.progress - 0.01) * 100, 1) : 0;
+        cubesContainerRef.current.style.opacity = String(cubesOpacityProgress);
+        
+        const header1Progress = Math.min(self.progress * 2.5, 1);
+        header1Ref.current.style.transform = `translate(-50%, -50%) scale(${interpolate(
+          1,
+          1.5,
+          header1Progress
+        )})`;
+        header1Ref.current.style.filter = `blur(${interpolate(0, 20, header1Progress)}px)`;
+        header1Ref.current.style.opacity = String(1 - header1Progress);
+        
+        // Add background image shrinking effect
+        const bgSvg = document.querySelector('.bg-svg') as HTMLElement;
+        if (bgSvg) {
+          const bgScale = interpolate(1, 0.90, Math.min(self.progress * 3, 1));
+          bgSvg.style.transform = `translate(-50%, -50%) scale(${bgScale})`;
+        }
+        
+        // Connect button animation - fades out with header1
+        connectBtnRef.current.style.filter = `blur(${interpolate(0, 20, header1Progress)}px)`;
+        connectBtnRef.current.style.opacity = String(1 - header1Progress);
+        
+        // Scroll indicator animation - fades out faster than header1
+        if (scrollIndicatorRef.current) {
+          const scrollProgress = Math.min(self.progress * 5, 1);
+          scrollIndicatorRef.current.style.opacity = String(Math.max(0, 0.8 - scrollProgress));
+        }
+        
+        const header2StartProgress = (self.progress - 0.4) * 10;
+        const header2Progress = Math.max(0, Math.min(header2StartProgress, 1));
+        const header2Scale = interpolate(0.75, 1, header2Progress);
+        const header2Blur = interpolate(10, 0, header2Progress);
+        const header2Top = interpolate(50, 50, header2Progress);
+        
+        header2Ref.current.style.transform = `translate(-50%, -50%) scale(${header2Scale})`;
+        header2Ref.current.style.filter = `blur(${header2Blur}px)`;
+        header2Ref.current.style.opacity = String(header2Progress);
+        header2Ref.current.style.top = `${header2Top}%`;
+        
+        const firstPhaseProgress = Math.min(self.progress * 2, 1);
+        const secondPhaseProgress =
+          self.progress >= 0.5 ? (self.progress - 0.5) * 2 : 0;
+        
+        Object.entries(cubesData).forEach(([cubeClass, data]) => {
+          const cube = document.querySelector(`.${cubeClass}`);
+          if (!cube) return;
+          
+          const { initial, final } = data;
+          
+          const currentTop = interpolate(
+            initial.top,
+            final.top,
+            firstPhaseProgress
+          );
+          const currentLeft = interpolate(
+            initial.left,
+            final.left,
+            firstPhaseProgress
+          );
+          const currentRotateX = interpolate(
+            initial.rotateX,
+            final.rotateX,
+            firstPhaseProgress
+          );
+          const currentRotateY = interpolate(
+            initial.rotateY,
+            final.rotateY,
+            firstPhaseProgress
+          );
+          const currentRotateZ = interpolate(
+            initial.rotateZ,
+            final.rotateZ,
+            firstPhaseProgress
+          );
+          const currentZ = interpolate(initial.z, final.z, firstPhaseProgress);
+          
+          let additionalRotation = 0;
+          if (cubeClass === "cube-2") {
+            additionalRotation = interpolate(0, 180, secondPhaseProgress);
+          } else if (cubeClass === "cube-4") {
+            additionalRotation = interpolate(0, -180, secondPhaseProgress);
+          }
+          
+          (cube as HTMLElement).style.top = `${currentTop}%`;
+          (cube as HTMLElement).style.left = `${currentLeft}%`;
+          (cube as HTMLElement).style.transform = `
+              translate(-50%, -50%) 
+              translateZ(${currentZ}px)
+              rotateX(${currentRotateX}deg)
+              rotateY(${currentRotateY + additionalRotation}deg)
+              rotateZ(${currentRotateZ}deg)
+          `;
+        });
+      },
+    });
+    
+    return () => {
+      lenis.destroy();
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+  
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      <section className="sticky" ref={stickyRef}>
+        <img src="/landing-bg.svg" alt="Background" className="bg-svg" />
+        
+        <div className="logo" ref={logoRef}>
+          <div className="col">
+            <div className="block block-1"></div>
+            <div className="block block-2"></div>
+          </div>
+          <div className="col">
+            <div className="block block-3"></div>
+            <div className="block block-4"></div>
+          </div>
+          <div className="col">
+            <div className="block block-5"></div>
+            <div className="block block-6"></div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <div className="cubes" ref={cubesContainerRef}>
+          <div className="cube cube-1">
+            <div className="front"></div>
+            <div className="back"></div>
+            <div className="right"></div>
+            <div className="left"></div>
+            <div className="top"></div>
+            <div className="bottom"></div>
+          </div>
+
+          <div className="cube cube-2">
+            <div className="front"></div>
+            <div className="back"></div>
+            <div className="right"></div>
+            <div className="left"></div>
+            <div className="top"></div>
+            <div className="bottom"></div>
+          </div>
+
+          <div className="cube cube-3">
+            <div className="front"></div>
+            <div className="back"></div>
+            <div className="right"></div>
+            <div className="left"></div>
+            <div className="top"></div>
+            <div className="bottom"></div>
+          </div>
+
+          <div className="cube cube-4">
+            <div className="front"></div>
+            <div className="back"></div>
+            <div className="right"></div>
+            <div className="left"></div>
+            <div className="top"></div>
+            <div className="bottom"></div>
+          </div>
+
+          <div className="cube cube-5">
+            <div className="front"></div>
+            <div className="back"></div>
+            <div className="right"></div>
+            <div className="left"></div>
+            <div className="top"></div>
+            <div className="bottom"></div>
+          </div>
+
+          <div className="cube cube-6">
+            <div className="front"></div>
+            <div className="back"></div>
+            <div className="right"></div>
+            <div className="left"></div>
+            <div className="top"></div>
+            <div className="bottom"></div>
+          </div>
+        </div>
+
+        <div className="header-1  mx-auto justify-center" ref={header1Ref}>
+          <h1 className="text-center align-middle justify-center w-[80%] mx-auto">
+            The First NFT Marketplace Built for the Digital-First Generation.<br/> <span className="text-[24px]">Powered by Sonic Blockchain.</span>
+          </h1>
+        </div>
+        
+        <a 
+          href="https://playback-interface.vercel.app" 
+          className={`connect-wallet-btn ${isWalletConnecting ? 'connecting' : ''}`} 
+          ref={connectBtnRef}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
+          <img src="/landing-connect-btn.svg" alt="Connect Wallet Button" style={{ width: '100%', height: 'auto' }} />
+          <div className="connect-wallet-btn-text">
+            {isWalletConnecting ? "Launching..." : "Launch App"}
+          </div>
         </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+        <div className="header-2" ref={header2Ref}>
+          <h2>Level Up Your Game, Power Up Your Assets.</h2>
+          <p>
+            Step into the future of gaming finance. Sonic.Game's NFT lending and borrowing market lets you unlock liquidity from your digital assets while keeping your in-game advantage.
+          </p>
+        </div>
+
+        <div className="scroll-indicator" ref={scrollIndicatorRef}>
+          <img src="/BsMouse.svg" alt="Scroll" className="mouse-icon" />
+          <span className="scroll-text">scroll down</span>
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-logo">
+            <img src="/logo.png" alt="Sonic Logo" />
+          </div>
+          
+          <div className="footer-links">
+            <div className="footer-column">
+              <h3>Learn</h3>
+              <ul>
+                <li><a href="#">Developers</a></li>
+                <li><a href="#">Documentation</a></li>
+                <li><a href="#">Resources</a></li>
+                <li><a href="#">FAQ</a></li>
+              </ul>
+            </div>
+            
+            <div className="footer-column">
+              <h3>Community</h3>
+              <ul>
+                <li><a href="#">X</a></li>
+                <li><a href="#">Telegram</a></li>
+                <li><a href="#">Support</a></li>
+              </ul>
+            </div>
+            
+            <div className="footer-column">
+              <h3>Legal</h3>
+              <ul>
+                <li><a href="#">Playback Hub</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Privacy</a></li>
+                <li><a href="#">Playback Pay</a></li>
+                <li><a href="#">Playback Bridge</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div className="footer-disclaimer">
+          <p>These materials are for general information purposes only and are not investment advice or a recommendation or solicitation to buy, sell, stake or hold any cryptoasset or to engage in any specific trading strategy. Playback does not and will not work to increase or decrease the price of any particular cryptoasset it makes available. Some crypto products and markets are unregulated, and you may not be protected by government compensation and/or regulatory protection schemes. The unpredictable nature of the crypto-asset markets can lead to loss of funds. Tax may be payable on any return and/or on any increase in the value of your cryptoassets and you should seek independent advice on your taxation position. Geographic restrictions may apply.</p>
+          <p>© 2024 Sonic Blockchain. All rights reserved.</p>
+        </div>
       </footer>
-    </div>
+    </>
   );
 }
