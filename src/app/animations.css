@@ -7,8 +7,9 @@
 html,
 body {
     width: 100vw;
-    height: 600vh;
+    height: auto;
     font-family: var(--font-jost);
+    overflow-x: hidden;
 }
 
 img {
@@ -379,11 +380,144 @@ section {
     }
 }
 
+/* Analytics Section Styles */
+.analytics-section {
+    background: linear-gradient(180deg, #020007 0%, #0C0427 50%, #020007 100%);
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.analytics-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.analytics-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.analytics-header h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+    font-family: var(--font-jost);
+}
+
+.analytics-header p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-family: var(--font-jost);
+}
+
+.analytics-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 80px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(73, 157, 208, 0.1);
+    border: 1px solid rgba(73, 157, 208, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    flex: 1;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #499DD0 0%, #A259FF 100%);
+
+    -webkit-text-fill-color: transparent;
+    font-family: var(--font-jost);
+}
+
+.stat-card p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: var(--font-jost);
+}
+
+.platform-features {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.feature-card {
+    flex: 1;
+    min-width: 280px;
+    background: rgba(12, 4, 39, 0.3);
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(73, 157, 208, 0.2);
+    position: relative;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(73, 157, 208, 0.15);
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 24px;
+    background: rgba(73, 157, 208, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.feature-card h4 {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    font-family: var(--font-jost);
+}
+
+.feature-card p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-family: var(--font-jost);
+}
+
 /* Footer Styles */
 .footer {
     background-color: #020007;
     color: white;
-    padding: 60px 0 30px;
+    padding: 80px 0 40px;
     position: relative;
     width: 100%;
     overflow: hidden;
@@ -395,20 +529,31 @@ section {
     padding: 0 40px;
     display: flex;
     flex-direction: column;
-    gap: 60px;
 }
 
 @media (min-width: 768px) {
     .footer-content {
         flex-direction: row;
         align-items: flex-start;
-        justify-content: space-between;
+    }
+
+    .footer-logo {
+        width: 30%;
+        margin-right: 0;
+        margin-top: 0;
+    }
+
+    .footer-links {
+        width: 60%;
+        margin-left: auto;
+        display: flex;
+        justify-content: flex-end;
     }
 }
 
 .footer-logo {
-    max-width: 80px;
-    margin-right: 40px;
+    width: 80px;
+    margin: 0 auto 40px;
 }
 
 .footer-logo img {
@@ -420,18 +565,17 @@ section {
 .footer-links {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 60px;
-    flex-grow: 1;
+    gap: 40px 80px;
 }
 
 .footer-column {
-    min-width: 150px;
+    min-width: 120px;
+    flex: 0 0 auto;
 }
 
 .footer-column h3 {
     color: white;
-    font-family: var(--font-geist-sans);
+    font-family: var(--font-jost);
     font-weight: 500;
     font-size: 0.9rem;
     margin-bottom: 20px;
@@ -452,7 +596,7 @@ section {
     color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
     font-size: 0.85rem;
-    font-family: var(--font-geist-mono);
+    font-family: var(--font-jost);
     transition: color 0.2s ease;
     font-weight: 400;
 }
@@ -463,17 +607,17 @@ section {
 
 .footer-disclaimer {
     max-width: 1200px;
-    margin: 80px auto 0;
+    margin: 100px auto 0;
     padding: 30px 40px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
     line-height: 1.6;
 }
 
 .footer-disclaimer p {
     margin-bottom: 20px;
-    font-family: var(--font-geist-sans);
+    font-family: var(--font-jost);
     font-weight: 300;
 }
 

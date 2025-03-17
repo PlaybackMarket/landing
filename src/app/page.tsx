@@ -7,6 +7,25 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "@studio-freight/lenis";
 import Image from "next/image";
 
+// SVG Icons for the analytics section
+const ShieldIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="#499DD0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const ChartIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 20V10M12 20V4M6 20V14" stroke="#499DD0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const WalletIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19 5V19H5V5H19ZM21 3H3V21H21V3ZM16 8H14V10H16V8ZM17 15H7V16H17V15ZM17 12H7V13H17V12Z" fill="#499DD0"/>
+  </svg>
+);
+
 export default function Home() {
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
   const stickyRef = useRef<HTMLElement>(null);
@@ -14,8 +33,13 @@ export default function Home() {
   const cubesContainerRef = useRef<HTMLDivElement>(null);
   const header1Ref = useRef<HTMLDivElement>(null);
   const header2Ref = useRef<HTMLDivElement>(null);
-  const connectBtnRef = useRef<HTMLDivElement>(null);
+  const connectBtnRef = useRef<HTMLAnchorElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const analyticsHeaderRef = useRef<HTMLDivElement>(null);
+  const featureCardsRef = useRef<HTMLDivElement>(null);
+  const featureCard1Ref = useRef<HTMLDivElement>(null);
+  const featureCard2Ref = useRef<HTMLDivElement>(null);
+  const featureCard3Ref = useRef<HTMLDivElement>(null);
   
   const handleConnectWallet = () => {
     setIsWalletConnecting(true);
@@ -172,6 +196,46 @@ export default function Home() {
       },
     });
     
+    // Simple, clean animation for the analytics section
+    if (analyticsHeaderRef.current && featureCardsRef.current) {
+      // Header fade in
+      gsap.fromTo(analyticsHeaderRef.current, 
+        { y: 20, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.5,
+          scrollTrigger: {
+            trigger: analyticsHeaderRef.current,
+            start: "top 80%",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+      
+      // Feature cards fade in one by one
+      const cards = [featureCard1Ref.current, featureCard2Ref.current, featureCard3Ref.current];
+      
+      cards.forEach((card, index) => {
+        if (!card) return;
+        
+        gsap.fromTo(card,
+          { y: 20, opacity: 0 },
+          { 
+            y: 0, 
+            opacity: 1, 
+            duration: 0.5,
+            delay: index * 0.15, // Slight delay between cards
+            scrollTrigger: {
+              trigger: featureCardsRef.current,
+              start: "top 75%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      });
+    }
+    
     return () => {
       lenis.destroy();
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -180,6 +244,7 @@ export default function Home() {
   
   return (
     <>
+      {/* Hero Section */}
       <section className="sticky" ref={stickyRef}>
         <img src="/landing-bg.svg" alt="Background" className="bg-svg" />
         
@@ -284,6 +349,43 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Analytics Section */}
+      <section className="analytics-section">
+        <div className="analytics-container">
+          <div className="analytics-header" ref={analyticsHeaderRef}>
+            <h2>Sonic Trading Protocol</h2>
+            <p>Unlock the power of your NFT assets through our advanced lending and borrowing platform. Earn passive income or gain liquidity without selling your collectibles.</p>
+          </div>
+          
+          <div className="platform-features" ref={featureCardsRef}>
+            <div className="feature-card stat-card" ref={featureCard1Ref}>
+              <div className="feature-icon">
+                <ShieldIcon />
+              </div>
+              <h4>Secure Lending</h4>
+              <p>Our smart contracts have undergone rigorous audits to ensure the safety of your assets throughout the lending process.</p>
+            </div>
+            
+            <div className="feature-card stat-card" ref={featureCard2Ref}>
+              <div className="feature-icon">
+                <ChartIcon />
+              </div>
+              <h4>Market Analytics</h4>
+              <p>Access real-time data on collection liquidity, floor prices, and market trends to make informed decisions.</p>
+            </div>
+            
+            <div className="feature-card stat-card" ref={featureCard3Ref}>
+              <div className="feature-icon">
+                <WalletIcon />
+              </div>
+              <h4>Passive Income</h4>
+              <p>Earn interest by depositing your NFTs into our lending pools, creating a new revenue stream with your digital assets.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-logo">
@@ -311,13 +413,13 @@ export default function Home() {
             </div>
             
             <div className="footer-column">
-              <h3>Legal</h3>
+              <h3>Play</h3>
               <ul>
                 <li><a href="#">Playback Hub</a></li>
                 <li><a href="#">Terms of Service</a></li>
                 <li><a href="#">Privacy</a></li>
-                <li><a href="#">Playback Pay</a></li>
-                <li><a href="#">Playback Bridge</a></li>
+    
+               
               </ul>
             </div>
           </div>
