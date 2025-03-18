@@ -28,6 +28,7 @@ const WalletIcon = () => (
 
 export default function Home() {
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
+  const [isAnalyticsLaunching, setIsAnalyticsLaunching] = useState(false);
   const stickyRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const cubesContainerRef = useRef<HTMLDivElement>(null);
@@ -40,6 +41,7 @@ export default function Home() {
   const featureCard1Ref = useRef<HTMLDivElement>(null);
   const featureCard2Ref = useRef<HTMLDivElement>(null);
   const featureCard3Ref = useRef<HTMLDivElement>(null);
+  const analyticsLaunchBtnRef = useRef<HTMLAnchorElement>(null);
   
   const handleConnectWallet = () => {
     setIsWalletConnecting(true);
@@ -48,6 +50,15 @@ export default function Home() {
       setIsWalletConnecting(false);
       alert("Wallet connection functionality would go here!");
     }, 1500);
+  };
+  
+  const handleAnalyticsLaunch = () => {
+    setIsAnalyticsLaunching(true);
+    // Simulating launch process
+    setTimeout(() => {
+      setIsAnalyticsLaunching(false);
+      window.location.href = "https://playback-interface.vercel.app";
+    }, 1000);
   };
   
   useEffect(() => {
@@ -197,7 +208,7 @@ export default function Home() {
     });
     
     // Simple, clean animation for the analytics section
-    if (analyticsHeaderRef.current && featureCardsRef.current) {
+    if (analyticsHeaderRef.current && featureCardsRef.current && analyticsLaunchBtnRef.current) {
       // Header fade in
       gsap.fromTo(analyticsHeaderRef.current, 
         { y: 20, opacity: 0 },
@@ -205,6 +216,22 @@ export default function Home() {
           y: 0, 
           opacity: 1, 
           duration: 0.5,
+          scrollTrigger: {
+            trigger: analyticsHeaderRef.current,
+            start: "top 80%",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+      
+      // Analytics launch button animation
+      gsap.fromTo(analyticsLaunchBtnRef.current,
+        { y: 20, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.5,
+          delay: 0.2,
           scrollTrigger: {
             trigger: analyticsHeaderRef.current,
             start: "top 80%",
@@ -225,7 +252,7 @@ export default function Home() {
             y: 0, 
             opacity: 1, 
             duration: 0.5,
-            delay: index * 0.15, // Slight delay between cards
+            delay: 0.3 + (index * 0.15), // Slight delay between cards
             scrollTrigger: {
               trigger: featureCardsRef.current,
               start: "top 75%",
@@ -357,6 +384,22 @@ export default function Home() {
             <p>Unlock the power of your NFT assets through our advanced lending and borrowing platform. Earn passive income or gain liquidity without selling your collectibles.</p>
           </div>
           
+          {/* Analytics Launch Button - Using same style as hero section */}
+          <a 
+            href="https://playback-interface.vercel.app" 
+            className={`analytics-launch-btn ${isAnalyticsLaunching ? 'launching' : ''}`} 
+            ref={analyticsLaunchBtnRef}
+            onClick={(e) => {
+              e.preventDefault();
+              handleAnalyticsLaunch();
+            }}
+          >
+            <img src="/landing-connect-btn.svg" alt="Connect Wallet Button" style={{ width: '100%', height: 'auto' }} />
+            <div className="analytics-launch-btn-text">
+              {isAnalyticsLaunching ? "Launching..." : "Launch App"}
+            </div>
+          </a>
+          
           <div className="platform-features" ref={featureCardsRef}>
             <div className="feature-card stat-card" ref={featureCard1Ref}>
               <div className="feature-icon">
@@ -418,8 +461,6 @@ export default function Home() {
                 <li><a href="#">Playback Hub</a></li>
                 <li><a href="#">Terms of Service</a></li>
                 <li><a href="#">Privacy</a></li>
-    
-               
               </ul>
             </div>
           </div>

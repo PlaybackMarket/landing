@@ -402,7 +402,7 @@ section {
 
 .analytics-header {
     text-align: center;
-    margin-bottom: 80px;
+    margin-bottom: 40px;
 }
 
 .analytics-header h2 {
@@ -421,6 +421,53 @@ section {
     margin: 0 auto;
     line-height: 1.6;
     font-family: var(--font-jost);
+    margin-bottom: 0;
+}
+
+/* Analytics Launch Button */
+.analytics-launch-btn {
+    display: block;
+    width: 240px;
+    margin: 0 auto 60px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+
+}
+
+.analytics-launch-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 48px #499dd0;
+}
+
+.analytics-launch-btn.launching {
+    opacity: 0.8;
+    cursor: wait;
+}
+
+.analytics-launch-btn.launching:hover {
+    transform: none;
+}
+
+.analytics-launch-btn img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.analytics-launch-btn-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 500;
+    font-size: 1.125rem;
+    letter-spacing: 0.5px;
+    color: white;
+    font-family: var(--font-jost);
+    white-space: nowrap;
 }
 
 .analytics-stats {
