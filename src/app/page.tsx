@@ -348,7 +348,7 @@ export default function Home() {
 
         <div className="header-1  mx-auto justify-center" ref={header1Ref}>
           <h1 className="text-center align-middle justify-center w-[80%] mx-auto">
-            The First NFT Marketplace Built for the Digital-First Generation.<br/> <span className="text-[24px]">Powered by Sonic Blockchain.</span>
+            Unlock Your Gaming Future with Sonic's First NFT Marketplace.<br/> <span className="text-[24px]">Powered by: Sonic Blockchain</span>
           </h1>
         </div>
         
